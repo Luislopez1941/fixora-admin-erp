@@ -1,0 +1,71 @@
+/* ===== Header compacto (tipo point-of-sale) ===== */
+.astra-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding: 0 20px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  margin: -32px -40px 24px;
+  width: calc(100% + 80px);
+}
+
+.astra-header__left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.astra-header__icon-menu {
+  display: none;
+  font-size: 22px;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.astra-header__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.2px;
+}
+
+.astra-header__right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.astra-header__btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bg);
+  color: var(--text-muted);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.astra-header__btn:hover {
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+
+.astra-header__btn .msr {
+  font-size: 18px;
+}
+
+@media (max-width: 760px) {
+  .astra-header {
+    margin: -20px -20px 20px;
+    width: calc(100% + 40px);
+    padding: 0 16px;
+  }
+  .astra-header__icon-menu {
+    display: inline-flex;
+  }
+}

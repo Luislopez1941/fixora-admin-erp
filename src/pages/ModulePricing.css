@@ -1,0 +1,277 @@
+/* ===== ModulePricing page ===== */
+
+.mp-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.mp-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.mp-head-text h1 {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.mp-head-text p {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* Currency selector */
+.mp-currency-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.mp-currency-select {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--text);
+  cursor: pointer;
+}
+
+/* Table */
+.mp-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.mp-table th {
+  text-align: left;
+  padding: 10px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  background: #fafafe;
+  border-bottom: 1px solid var(--border);
+}
+
+.mp-table th.right {
+  text-align: right;
+}
+
+.mp-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.mp-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.mp-table tbody tr:hover {
+  background: #fafafe;
+}
+
+/* Module name cell */
+.mp-mod-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mp-mod-icon {
+  font-size: 20px !important;
+  color: var(--brand);
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  background: var(--brand-soft);
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.mp-mod-name {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.mp-mod-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+/* Price inputs */
+.mp-price-cell {
+  text-align: right;
+}
+
+.mp-price-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0 10px 0 6px;
+  transition: border-color 0.15s;
+}
+
+.mp-price-wrap:focus-within {
+  border-color: var(--brand);
+  background: var(--surface);
+}
+
+.mp-price-symbol {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 600;
+  user-select: none;
+}
+
+.mp-price-input {
+  background: none;
+  border: none;
+  outline: none;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--text);
+  width: 80px;
+  text-align: right;
+  padding: 7px 0;
+}
+
+/* Save bar */
+.mp-save-bar {
+  position: sticky;
+  bottom: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 14px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mp-save-info {
+  font-size: 13px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mp-save-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.mp-btn-reset {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.mp-btn-reset:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.mp-btn-save {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--brand);
+  color: #fff;
+  border: none;
+  padding: 9px 22px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+.mp-btn-save:hover:not(:disabled) {
+  background: var(--brand-600);
+}
+.mp-btn-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Feedback */
+.mp-msg {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 8px;
+}
+.mp-msg--ok  { background: var(--success-soft); color: var(--success); }
+.mp-msg--err { background: rgba(220,38,38,0.1); color: var(--danger); }
+
+/* Summary cards */
+.mp-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 700px) {
+  .mp-summary { grid-template-columns: 1fr; }
+}
+
+.mp-summary-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+}
+
+.mp-summary-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.mp-summary-value {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.mp-summary-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.mp-spin {
+  display: inline-block;
+  animation: spin 0.8s linear infinite;
+}
