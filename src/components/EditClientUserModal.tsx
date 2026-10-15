@@ -129,26 +129,26 @@ export default function EditClientUserModal({ open, user, onClose, onUpdated }: 
               <div className="form-row form-row--triple">
                 <div className="form-group">
                   <label htmlFor="firstName">Nombre(s) *</label>
-                  <input id="firstName" name="firstName" type="text" defaultValue={user.firstName} />
+                  <input id="firstName" name="firstName" type="text" defaultValue={user.firstName ?? ""} />
                 </div>
                 <div className="form-group">
                   <label htmlFor="firstLastName">Apellido paterno *</label>
-                  <input id="firstLastName" name="firstLastName" type="text" defaultValue={user.firstLastName} />
+                  <input id="firstLastName" name="firstLastName" type="text" defaultValue={user.firstLastName ?? ""} />
                 </div>
                 <div className="form-group">
                   <label htmlFor="secondLastName">Apellido materno *</label>
-                  <input id="secondLastName" name="secondLastName" type="text" defaultValue={user.secondLastName} />
+                  <input id="secondLastName" name="secondLastName" type="text" defaultValue={user.secondLastName ?? ""} />
                 </div>
               </div>
 
               <div className="form-row form-row--triple">
                 <div className="form-group">
                   <label htmlFor="email">Email *</label>
-                  <input id="email" name="email" type="email" defaultValue={user.email} />
+                  <input id="email" name="email" type="email" defaultValue={user.email ?? ""} />
                 </div>
                 <div className="form-group">
                   <label htmlFor="phone">Teléfono *</label>
-                  <input id="phone" name="phone" type="tel" defaultValue={user.phone} />
+                  <input id="phone" name="phone" type="tel" defaultValue={user.phone ?? ""} />
                 </div>
                 <div className="form-group">
                   <label htmlFor="password">Nueva contraseña</label>

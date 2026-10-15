@@ -131,12 +131,12 @@ const APIs = {
 
   ///////////////////////////////////MIGRACIONES////////////////////////////////////////////////////
 
-  runMigration: async () => ConfigurationAPIs.post<{ success: boolean; message: string }>('migration/run'),
-  runMigrationForUser: async (userId: number) => ConfigurationAPIs.post<{ success: boolean; message: string }>(`migration/run/${userId}`),
-  deployMigrationForUser: async (userId: number) => ConfigurationAPIs.post<{ success: boolean; message: string; error?: string }>(`migration/deploy/${userId}`),
+  runMigration: async () => ConfigurationAPIs.post<{ success: boolean; message: string }>('migration/run', {}),
+  runMigrationForUser: async (userId: number) => ConfigurationAPIs.post<{ success: boolean; message: string }>(`migration/run/${userId}`, {}),
+  deployMigrationForUser: async (userId: number) => ConfigurationAPIs.post<{ success: boolean; message: string; error?: string }>(`migration/deploy/${userId}`, {}),
   pushForceForUser: async (userId: number) => ConfigurationAPIs.post<{ success: boolean; message: string; error?: string }>(`migration/push-force/${userId}`, {}),
   applySqlMigrationForUser: async (userId: number, name: string) => ConfigurationAPIs.post<{ success: boolean; message: string; error?: string }>(`migration/apply-sql/${userId}`, { name }),
-  resetDatabase: async (userId: number) => ConfigurationAPIs.post<{ success: boolean; message: string }>(`migration/reset/${userId}`),
+  resetDatabase: async (userId: number) => ConfigurationAPIs.post<{ success: boolean; message: string }>(`migration/reset/${userId}`, {}),
 
   ///////////////////////////////////CLIENT USERS (cuentas de los clientes, separadas de Licencias)////////////////////////////////////////////////////
 
@@ -151,6 +151,7 @@ const APIs = {
     secondLastName: string;
     phone: string;
     deploymentMode: DeploymentMode;
+    businessTypeId?: number;
     databaseUrl?: string;
     directUrl?: string;
     supabaseUrl?: string;

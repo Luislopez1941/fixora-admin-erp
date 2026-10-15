@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
-import APIs from '../services/APIs'
-import './pages.css'
+import { useEffect, useState } from 'react'
+import APIs from '../../services/APIs'
+import '../../pages/pages.css'
 
 interface BusinessType {
   id: number
@@ -32,7 +32,7 @@ export default function BusinessTypesModal({ type, isOpen, onClose, onSaved }: P
   useEffect(() => {
     if (isOpen) {
       // Load modules catalog
-      APIs.getModulePricing().then(modules => {
+      APIs.getModulePricing().then((modules: any) => {
         setAvailableModules(modules)
       })
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import APIs from '../services/APIs'
 import '../pages/pages.css'
 import '../pages/Licenses.css'

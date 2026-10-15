@@ -72,7 +72,6 @@ export default function BusinessTypes() {
   )
   const data = response?.data ?? null
 
-  const [editingModules, setEditingModules] = useState<number | null>(null)
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null)
 
@@ -193,24 +192,6 @@ export default function BusinessTypes() {
     }
   }
 
-  const toggleModule = async (bt: BusinessTypeRow, moduleId: string, enabled: boolean) => {
-    setSaving(true)
-    setMsg(null)
-    try {
-      if (enabled) {
-        await APIs.addBusinessTypeDefaultModule(bt.id, moduleId)
-      } else {
-        await APIs.removeBusinessTypeDefaultModule(bt.id, moduleId)
-      }
-      setMsg({ ok: true, text: 'Módulo actualizado' })
-      refetch()
-    } catch (e: any) {
-      setMsg({ ok: false, text: e.message || 'Error' })
-    } finally {
-      setSaving(false)
-    }
-  }
-
   const toggleActive = async (bt: BusinessTypeRow) => {
     setSaving(true)
     setMsg(null)
@@ -250,8 +231,6 @@ export default function BusinessTypes() {
         ) : (
           <div className="business-types__list">
             {data.map((bt) => {
-              const assigned = new Set((bt.defaultModules ?? []).map((m) => m.moduleId))
-
               return (
                 <div key={bt.id} className={`business-types__card${bt.active ? '' : ' business-types__card--inactive'}`}>
                   <div className="business-types__card-header">

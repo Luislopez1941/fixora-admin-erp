@@ -1,4 +1,4 @@
-import { useState, useMemo, Fragment } from 'react'
+import { useState, useMemo } from 'react'
 import APIs, { type DeploymentMode } from '../services/APIs'
 import { useFetch } from '../lib/useFetch'
 import Toast, { type ToastData } from '../components/Toast'
@@ -38,12 +38,6 @@ interface License {
   billingCycle: string
   cycleStartDate: string | null
   discountPercent: number
-}
-
-interface SyncStatus {
-  total: number
-  pending: number
-  processed: number
 }
 
 export default function Licenses() {
