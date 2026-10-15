@@ -16,10 +16,16 @@ export function useFetch<T>(fetcher: () => Promise<T>, deps: unknown[] = []) {
     loading: true,
     error: null,
   })
+  const [reload, setReload] = useState(0)
 
   useEffect(() => {
     let active = true
-    setState((s) => ({ ...s, loading: true, error: null }))
+    // OJO: limpia `data` (no solo loading/error) — si no, al cambiar de licencia
+    // (o cualquier dep) se seguían mostrando los datos VIEJOS mientras cargaba
+    // lo nuevo. En modales como el de licencias, eso dejaba ver el historial de
+    // cobros de la licencia anterior por un instante — y si alguien hacía clic
+    // ahí, mandaba el id de un cobro de OTRA licencia ("Cobro no encontrado").
+    setState({ data: null, loading: true, error: null })
 
     fetcher()
       .then((data) => {
@@ -34,7 +40,7 @@ export function useFetch<T>(fetcher: () => Promise<T>, deps: unknown[] = []) {
       active = false
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps)
+  }, [...deps, reload])
 
-  return state
+  return { ...state, refetch: () => setReload((r) => r + 1) }
 }

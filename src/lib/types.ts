@@ -7,6 +7,11 @@ export interface PlatformStats {
 
 export interface CompanyRow {
   id: number
+  // A qué cliente (base propia) pertenece esta empresa — cada cliente vive en su
+  // propia base, así que el id de empresa por sí solo puede repetirse entre
+  // clientes distintos. Úsalo junto con `id` para una key/identidad única.
+  clientUserId: number
+  ownerEmail: string
   name: string
   businessName: string
   logo: string | null
@@ -25,6 +30,8 @@ export interface UserCompanyRef {
 
 export interface UserRow {
   id: number
+  clientUserId: number
+  ownerEmail: string
   name: string
   email: string
   userKind: 'SYSTEM' | 'ACCOUNT' | 'STAFF'
@@ -111,6 +118,7 @@ export interface UserCompanyDetail {
 
 export interface UserDetail {
   id: number
+  clientUserId: number
   name: string
   email: string
   userKind: 'SYSTEM' | 'ACCOUNT' | 'STAFF'

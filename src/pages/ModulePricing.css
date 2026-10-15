@@ -83,11 +83,41 @@
   background: #fafafe;
 }
 
+/* Secciones (módulo con submódulos) vs sus hijos */
+.mp-row--section td {
+  background: #fafafe;
+}
+
+.mp-row--child td {
+  border-bottom-color: transparent;
+}
+
+.mp-row--child:last-of-type td,
+.mp-row--child + .mp-row--section td {
+  border-bottom-color: var(--border);
+}
+
 /* Module name cell */
 .mp-mod-cell {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.mp-mod-cell--child {
+  padding-left: 42px;
+}
+
+.mp-mod-cell--child .mp-mod-name {
+  font-weight: 500;
+  font-size: 12.5px;
+}
+
+/* Precio calculado (suma de submódulos) — no editable a propósito */
+.mp-price-computed {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
 }
 
 .mp-mod-icon {

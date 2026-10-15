@@ -1,0 +1,83 @@
+/* ===== ClientUserOverview page — extiende las clases ud-* de UserDetail.css ===== */
+
+.cuo-summary-chip--value {
+  background: var(--brand-soft);
+  border-color: transparent;
+  color: var(--brand);
+}
+
+.cuo-license-icon {
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+
+.cuo-license-icon--blocked {
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--danger);
+}
+
+.cuo-license-icon--expired {
+  background: rgba(107, 114, 128, 0.12);
+  color: var(--text-muted);
+}
+
+.cuo-license-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.cuo-status-pill {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.cuo-status-pill--active {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.cuo-status-pill--blocked {
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--danger);
+}
+
+.cuo-status-pill--expired {
+  background: rgba(107, 114, 128, 0.12);
+  color: var(--text-muted);
+}
+
+.cuo-license-exp {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.cuo-module-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.cuo-module-chip {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 8px;
+}

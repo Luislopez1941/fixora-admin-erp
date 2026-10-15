@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { api } from '../lib/api'
+import { Fragment, useState, useEffect } from 'react'
+import APIs from '../services/APIs'
 import { useFetch } from '../lib/useFetch'
 import type { ModulePricingRow } from '../lib/types'
 import './pages.css'
@@ -27,7 +27,7 @@ const fmt = (n: number, currency: string) =>
 
 export default function ModulePricing() {
   const { data: remote, loading, error } = useFetch<ModulePricingRow[]>(
-    () => api.get('/platform/modules/pricing'),
+    () => APIs.getModulePricing<ModulePricingRow[]>(),
   )
 
   const [rows, setRows] = useState<ModulePricingRow[]>([])
@@ -35,6 +35,22 @@ export default function ModulePricing() {
   const [dirty, setDirty] = useState(false)
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null)
+
+  // Agrupa por sección: un módulo con submódulos (ej. "sales" → "sales.sheet",
+  // "sales.quote"…) nunca lleva precio propio — su costo es la suma de sus hijos.
+  // Así, seleccionar la sección completa en una licencia nunca cobra doble (el
+  // padre y sus hijos al mismo tiempo), que era justo el bug: antes "Ventas" tenía
+  // SU PROPIO precio ADEMÁS del de sus hijos.
+  const sections = (() => {
+    const parents = rows.filter((r) => !r.moduleId.includes('.'))
+    return parents.map((parent) => ({
+      parent,
+      parentIndex: rows.indexOf(parent),
+      children: rows
+        .map((r, idx) => ({ row: r, idx }))
+        .filter(({ row }) => row.moduleId !== parent.moduleId && row.moduleId.startsWith(`${parent.moduleId}.`)),
+    }))
+  })()
 
   useEffect(() => {
     if (remote) {
@@ -66,7 +82,7 @@ export default function ModulePricing() {
     setSaving(true)
     setMsg(null)
     try {
-      await api.put('/platform/modules/pricing', {
+      await APIs.updateModulePricing({
         modules: rows.map(r => ({
           moduleId:     r.moduleId,
           priceMonthly: r.priceMonthly,
@@ -146,51 +162,118 @@ export default function ModulePricing() {
               </tr>
             </thead>
             <tbody>
-              {rows.map((row, idx) => (
-                <tr key={row.moduleId}>
-                  <td>
-                    <div className="mp-mod-cell">
-                      <span className="msr mp-mod-icon">
-                        {MOD_ICON[row.moduleId] ?? 'extension'}
-                      </span>
-                      <div>
-                        <div className="mp-mod-name">{row.name}</div>
-                        {row.description && (
-                          <div className="mp-mod-desc">{row.description}</div>
-                        )}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="mp-price-cell">
-                    <div className="mp-price-wrap">
-                      <span className="mp-price-symbol">$</span>
-                      <input
-                        className="mp-price-input"
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={row.priceMonthly === 0 ? '' : row.priceMonthly}
-                        placeholder="0.00"
-                        onChange={e => setPrice(idx, 'priceMonthly', e.target.value)}
-                      />
-                    </div>
-                  </td>
-                  <td className="mp-price-cell">
-                    <div className="mp-price-wrap">
-                      <span className="mp-price-symbol">$</span>
-                      <input
-                        className="mp-price-input"
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={row.priceAnnual === 0 ? '' : row.priceAnnual}
-                        placeholder="0.00"
-                        onChange={e => setPrice(idx, 'priceAnnual', e.target.value)}
-                      />
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {sections.map(({ parent, children }) => {
+                const hasChildren = children.length > 0
+                const sectionMonthly = hasChildren
+                  ? children.reduce((s, { row }) => s + row.priceMonthly, 0)
+                  : parent.priceMonthly
+                const sectionAnnual = hasChildren
+                  ? children.reduce((s, { row }) => s + row.priceAnnual, 0)
+                  : parent.priceAnnual
+
+                return (
+                  <Fragment key={parent.moduleId}>
+                    <tr className={hasChildren ? 'mp-row--section' : undefined}>
+                      <td>
+                        <div className="mp-mod-cell">
+                          <span className="msr mp-mod-icon">
+                            {MOD_ICON[parent.moduleId] ?? 'extension'}
+                          </span>
+                          <div>
+                            <div className="mp-mod-name">{parent.name}</div>
+                            {parent.description && (
+                              <div className="mp-mod-desc">{parent.description}</div>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                      {hasChildren ? (
+                        <>
+                          <td className="mp-price-cell">
+                            <span className="mp-price-computed">{fmt(sectionMonthly, currency)}</span>
+                          </td>
+                          <td className="mp-price-cell">
+                            <span className="mp-price-computed">{fmt(sectionAnnual, currency)}</span>
+                          </td>
+                        </>
+                      ) : (
+                        <>
+                          <td className="mp-price-cell">
+                            <div className="mp-price-wrap">
+                              <span className="mp-price-symbol">$</span>
+                              <input
+                                className="mp-price-input"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={parent.priceMonthly === 0 ? '' : parent.priceMonthly}
+                                placeholder="0.00"
+                                onChange={e => setPrice(rows.indexOf(parent), 'priceMonthly', e.target.value)}
+                              />
+                            </div>
+                          </td>
+                          <td className="mp-price-cell">
+                            <div className="mp-price-wrap">
+                              <span className="mp-price-symbol">$</span>
+                              <input
+                                className="mp-price-input"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={parent.priceAnnual === 0 ? '' : parent.priceAnnual}
+                                placeholder="0.00"
+                                onChange={e => setPrice(rows.indexOf(parent), 'priceAnnual', e.target.value)}
+                              />
+                            </div>
+                          </td>
+                        </>
+                      )}
+                    </tr>
+                    {children.map(({ row, idx }) => (
+                      <tr key={row.moduleId} className="mp-row--child">
+                        <td>
+                          <div className="mp-mod-cell mp-mod-cell--child">
+                            <div>
+                              <div className="mp-mod-name">{row.name}</div>
+                              {row.description && (
+                                <div className="mp-mod-desc">{row.description}</div>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="mp-price-cell">
+                          <div className="mp-price-wrap">
+                            <span className="mp-price-symbol">$</span>
+                            <input
+                              className="mp-price-input"
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={row.priceMonthly === 0 ? '' : row.priceMonthly}
+                              placeholder="0.00"
+                              onChange={e => setPrice(idx, 'priceMonthly', e.target.value)}
+                            />
+                          </div>
+                        </td>
+                        <td className="mp-price-cell">
+                          <div className="mp-price-wrap">
+                            <span className="mp-price-symbol">$</span>
+                            <input
+                              className="mp-price-input"
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={row.priceAnnual === 0 ? '' : row.priceAnnual}
+                              placeholder="0.00"
+                              onChange={e => setPrice(idx, 'priceAnnual', e.target.value)}
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </Fragment>
+                )
+              })}
             </tbody>
           </table>
         )}

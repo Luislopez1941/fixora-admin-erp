@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { api } from '../lib/api'
+import APIs from '../services/APIs'
 import type { CompanyModulesResponse, CompanyModule, UpdateCompanyModulesPayload } from '../lib/types'
 import './pages.css'
 import './CompanyModules.css'
@@ -34,7 +34,7 @@ export default function CompanyModules() {
   useEffect(() => {
     if (!id) return
     setLoading(true)
-    api.get<CompanyModulesResponse>(`/platform/companies/${id}/modules`)
+    APIs.getCompanyModules<CompanyModulesResponse>(id)
       .then((res) => {
         setData(res)
         setModules(res.modules)
@@ -81,7 +81,7 @@ export default function CompanyModules() {
       modules: modules.map((m) => ({ moduleId: m.moduleId, enabled: m.enabled })),
     }
     try {
-      await api.put(`/platform/companies/${id}/modules`, payload)
+      await APIs.updateCompanyModules(id, payload)
       originalRef.current = modules
       setSuccess('Módulos guardados correctamente')
     } catch (err: any) {

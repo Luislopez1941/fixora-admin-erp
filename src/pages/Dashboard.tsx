@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { api } from '../lib/api'
+import APIs from '../services/APIs'
 import { useFetch } from '../lib/useFetch'
 import type { PlatformStats, UserRow } from '../lib/types'
 import './pages.css'
@@ -21,8 +21,8 @@ const KIND_LABEL: Record<string, string> = {
 export default function Dashboard() {
   const navigate = useNavigate()
 
-  const stats = useFetch<PlatformStats>(() => api.get('/platform/stats'))
-  const users  = useFetch<UserRow[]>(() => api.get('/platform/users'))
+  const stats = useFetch<PlatformStats>(() => APIs.getPlatformStats<PlatformStats>())
+  const users  = useFetch<UserRow[]>(() => APIs.getUsers<UserRow[]>())
 
   // Solo mostramos dueños: SYSTEM y ACCOUNT (no STAFF)
   const owners = users.data?.filter((u) => u.userKind !== 'STAFF') ?? []
@@ -75,7 +75,7 @@ export default function Dashboard() {
               </thead>
               <tbody>
                 {owners.map((u) => (
-                  <tr key={u.id}>
+                  <tr key={`${u.clientUserId}-${u.id}`}>
                     <td>
                       <div className="owner-cell">
                         <span className="owner-avatar">
@@ -105,7 +105,7 @@ export default function Dashboard() {
                     <td>
                       <button
                         className="btn-ver"
-                        onClick={() => navigate(`/users/${u.id}`)}
+                        onClick={() => navigate(`/users/${u.clientUserId}/${u.id}`)}
                       >
                         Ver <span className="msr">arrow_forward</span>
                       </button>

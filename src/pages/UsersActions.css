@@ -1,0 +1,51 @@
+/* Acciones de cada usuario — clases bajo .user-actions: botones con ícono y nombre */
+.user-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+}
+
+.user-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--border, #e7e8ef);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text, #1f2430);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.user-action .msr {
+  font-size: 16px;
+  color: var(--brand, #6d28d9);
+}
+
+.user-action:hover:not(:disabled) {
+  background: var(--brand-soft, rgba(124, 58, 237, 0.1));
+  border-color: var(--brand, #6d28d9);
+}
+
+.user-action:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.user-action--danger .msr {
+  color: var(--danger, #dc2626);
+}
+
+.user-action--danger:hover:not(:disabled) {
+  background: rgba(220, 38, 38, 0.08);
+  border-color: var(--danger, #dc2626);
+  color: var(--danger, #dc2626);
+}

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { api } from '../lib/api'
+import APIs from '../services/APIs'
 import { useFetch } from '../lib/useFetch'
 import type { UserDetail, UserCompanyDetail, CompanyDetail, CompanyBilling } from '../lib/types'
 import './pages.css'
@@ -33,7 +33,7 @@ function ModulesModal({ companyId, title, onClose }: {
   onClose: () => void
 }) {
   const { data, loading, error } = useFetch<CompanyDetail>(
-    () => api.get(`/platform/companies/${companyId}`),
+    () => APIs.getCompanyDetail<CompanyDetail>(companyId),
     [companyId],
   )
 
@@ -59,7 +59,7 @@ function ModulesModal({ companyId, title, onClose }: {
     setSaving(true)
     setSaveMsg(null)
     try {
-      await api.put(`/platform/companies/${companyId}/modules`, {
+      await APIs.updateCompanyModules(companyId, {
         modules: Object.entries(localMods).map(([moduleId, enabled]) => ({
           moduleId, enabled,
         })),
@@ -177,7 +177,7 @@ function CompanyCard({ company, onModules }: {
   const [expanded, setExpanded] = useState(false)
 
   const { data: billing } = useFetch<CompanyBilling>(
-    () => api.get(`/platform/companies/${company.id}/billing`),
+    () => APIs.getCompanyBilling<CompanyBilling>(company.id),
     [company.id],
   )
 
@@ -262,13 +262,13 @@ function CompanyCard({ company, onModules }: {
 
 /* ── Página principal ── */
 export default function UserDetailPage() {
-  const { id }   = useParams<{ id: string }>()
+  const { clientUserId, userId } = useParams<{ clientUserId: string; userId: string }>()
   const navigate = useNavigate()
   const [modal, setModal] = useState<{ companyId: number; title: string } | null>(null)
 
   const { data: user, loading, error } = useFetch<UserDetail>(
-    () => api.get(`/platform/users/${id}`),
-    [id],
+    () => APIs.getUserDetail<UserDetail>(clientUserId as string, userId as string),
+    [clientUserId, userId],
   )
 
   if (loading) return <div className="state">Cargando…</div>

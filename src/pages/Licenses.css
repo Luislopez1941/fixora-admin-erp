@@ -1,0 +1,1140 @@
+/* Licencias - Admin Panel */
+
+.licenses-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.licenses-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 220px;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #d2d6e0;
+  border-radius: 8px;
+  background: #fff;
+  color: #8e95a1;
+}
+
+.licenses-search input {
+  flex: 1;
+  height: 100%;
+  border: none;
+  outline: none;
+  font-size: 0.88rem;
+  color: #1a1d24;
+  background: transparent;
+}
+
+.licenses-filter {
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #d2d6e0;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  color: #1a1d24;
+  background: #fff;
+}
+
+.licenses-toolbar .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent, #3f7dc0);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.licenses-toolbar .btn-primary:hover {
+  background: #2d5f96;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 12px;
+  width: 880px;
+  max-width: 94vw;
+  max-height: 88vh;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal__form {
+  display: flex;
+  flex-direction: column;
+  /* El formulario ocupa el alto disponible y solo el cuerpo hace scroll (cabecera y pie fijos) */
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.modal__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 1;
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  color: #8e95a1;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+}
+
+.modal__close:hover {
+  color: #1a1d24;
+}
+
+.modal-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 24px;
+  border-bottom: 1px solid #e8ecf1;
+  flex-shrink: 0;
+}
+
+.modal-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 4px;
+  margin-bottom: -1px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: #8e95a1;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.modal-tab + .modal-tab {
+  margin-left: 18px;
+}
+
+.modal-tab:hover {
+  color: #3c4049;
+}
+
+.modal-tab.is-active {
+  color: var(--accent, #3f7dc0);
+  border-bottom-color: var(--accent, #3f7dc0);
+}
+
+.modal__body {
+  padding: 24px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  min-height: 0;
+  flex: 1 1 auto;
+}
+
+.modal-section {
+  padding: 16px 0 14px;
+  border-bottom: 1px solid #eef0f4;
+}
+
+.modal-section:last-child {
+  border-bottom: none;
+  padding-bottom: 4px;
+}
+
+.modal-section__title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 14px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8e95a1;
+}
+
+/* Etiqueta tipo "variable de entorno" (DATABASE_URL, JWT_SECRET, etc.) — separa
+   visualmente los campos de credenciales crudas del resto del formulario. */
+.env-tag {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 5px;
+  background: #f1f0fb;
+  color: #5b4fc4;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.modal-hint {
+  display: block;
+  color: #8e95a1;
+  font-size: 0.78rem;
+  margin-top: -6px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.form-row--single {
+  grid-template-columns: 1fr;
+}
+
+.form-row--mode {
+  grid-template-columns: 1.7fr 1fr;
+}
+
+.form-row--triple {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.form-row--quad {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.form-group {
+  margin-bottom: 14px;
+}
+
+.modal-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 24px;
+  border-bottom: 1px solid #eef0f4;
+  flex-shrink: 0;
+}
+
+.modal-tabs__item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 4px;
+  margin-right: 20px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #8e95a1;
+  cursor: pointer;
+}
+
+.modal-tabs__item--active {
+  color: var(--brand);
+  border-bottom-color: var(--brand);
+}
+
+.modal-tabs__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--brand);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.license-modules__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.billing-toggle {
+  display: flex;
+  background: #f1f0fb;
+  border-radius: 8px;
+  padding: 3px;
+  flex-shrink: 0;
+}
+
+.billing-toggle__item {
+  padding: 6px 14px;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.billing-toggle__item--active {
+  background: #fff;
+  color: var(--brand);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.license-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  background: #f8f9fb;
+  border: 1px solid #eef0f4;
+  border-radius: 8px;
+}
+
+.license-total__label {
+  font-size: 0.82rem;
+  color: #5c6470;
+  font-weight: 600;
+}
+
+.license-total__value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--brand);
+}
+
+/* Lo que se va a COBRAR al guardar (prorrateado) — se distingue del total
+   informativo de arriba con un acento ámbar, como "esto sí genera un cargo". */
+.license-total--preview {
+  background: rgba(217, 119, 6, 0.08);
+  border-color: rgba(217, 119, 6, 0.25);
+}
+
+.license-total--preview .license-total__label {
+  color: #92400e;
+}
+
+.license-total--preview .license-total__label small {
+  display: block;
+  font-weight: 500;
+  color: #a16207;
+  margin-top: 2px;
+}
+
+.license-total--preview .license-total__value {
+  color: #b45309;
+}
+
+.license-limits {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.license-limits__row {
+  display: grid;
+  grid-template-columns: 140px 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  background: #f8f9fb;
+  border: 1px solid #eef0f4;
+  border-radius: 8px;
+  transition: border-color 0.15s ease;
+}
+
+.license-limits__row:has(.license-limits__unlimited input:not(:checked)) {
+  border-color: rgba(109, 40, 217, 0.3);
+}
+
+.license-limits__label {
+  font-weight: 600;
+  font-size: 0.86rem;
+}
+
+.license-limits__row input[type="number"] {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #e0e3e5;
+  border-radius: 6px;
+  font-size: 0.86rem;
+  font-family: inherit;
+}
+
+.license-limits__row input[type="number"]:disabled {
+  background: #f1f0fb;
+  color: #b3b8c2;
+}
+
+.license-limits__unlimited {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: #5c6470;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* Checkbox propio (reemplaza el nativo del navegador) — usado en módulos,
+   "Ilimitado" y cualquier otro check de esta sección. */
+.ui-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  border: 1.5px solid #d4d7e0;
+  border-radius: 5px;
+  background: #fff;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ui-checkbox:hover {
+  border-color: var(--brand);
+}
+
+.ui-checkbox:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--brand-soft);
+}
+
+.ui-checkbox:checked,
+.ui-checkbox:indeterminate {
+  background-color: var(--brand);
+  border-color: var(--brand);
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* SVG en vez del truco de "borde rotado" — ese se desalineaba porque su centro
+   geométrico no coincide con su centro visual (hay que calcularlo a mano y
+   cuadraba distinto según el box-sizing). Un ícono centra solo, siempre. */
+.ui-checkbox:checked {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 8.3l2.8 2.8 6-6.6'/%3E%3C/svg%3E");
+  background-size: 12px 12px;
+}
+
+.ui-checkbox:indeterminate {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M4 8h8'/%3E%3C/svg%3E");
+  background-size: 12px 12px;
+}
+
+.license-limits__unlimited input {
+  width: 17px;
+  height: 17px;
+}
+
+.billing-settings {
+  margin-top: 10px;
+}
+
+.billing-settings__row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: end;
+  gap: 20px;
+  margin-bottom: 10px;
+}
+
+.billing-settings__row label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #5c6470;
+  margin-bottom: 6px;
+}
+
+.billing-settings__date-field {
+  position: relative;
+}
+
+.billing-settings__discount-input {
+  width: 100px;
+  padding: 8px 10px;
+  border: 1px solid #e0e3e5;
+  border-radius: 6px;
+  font-size: 0.86rem;
+  font-family: inherit;
+}
+
+.charges-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.charges-list__row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  background: #f8f9fb;
+  border: 1px solid #eef0f4;
+  border-radius: 8px;
+}
+
+.charges-list__desc {
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.charges-list__meta {
+  font-size: 0.76rem;
+  color: #8e95a1;
+  margin-top: 2px;
+}
+
+.charges-list__amount {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--brand);
+  white-space: nowrap;
+}
+
+.charges-list__status {
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.charges-list__status--paid {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.charges-list__status--cancelled {
+  background: #f1f0fb;
+  color: #8e95a1;
+  text-decoration: line-through;
+}
+
+.charges-list__pay-btn {
+  white-space: nowrap;
+  padding: 7px 14px !important;
+  font-size: 0.78rem !important;
+}
+
+/* Checkbox que desbloquea editar el monto de un cobro pendiente. */
+.charges-list__edit-toggle {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.charges-list__amount--editing {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #fff;
+  border: 1px solid var(--brand);
+  border-radius: 6px;
+  padding: 0 8px;
+}
+
+.charges-list__amount--editing span {
+  color: #8e95a1;
+  font-size: 0.82rem;
+}
+
+.charges-list__amount--editing input {
+  border: none;
+  outline: none;
+  padding: 6px 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: inherit;
+  width: 90px;
+  color: var(--brand);
+}
+
+.charges-list__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Cancelado — se queda el registro pero se nota que ya no cuenta. */
+.charges-list__row--cancelled {
+  opacity: 0.6;
+}
+
+.charges-list__row--cancelled .charges-list__desc {
+  text-decoration: line-through;
+}
+
+/* Cobros manuales todavía sin guardar (se juntan con "Guardar configuración"). */
+.charges-list__row--pending {
+  background: rgba(217, 119, 6, 0.06);
+  border-color: rgba(217, 119, 6, 0.2);
+  border-style: dashed;
+}
+
+.custom-price-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.custom-price-row__check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #5c6470;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.custom-price-row__input {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #fff;
+  border: 1px solid #e0e3e5;
+  border-radius: 6px;
+  padding: 0 10px;
+}
+
+.custom-price-row__input span {
+  color: #8e95a1;
+  font-size: 0.82rem;
+}
+
+.custom-price-row__input input {
+  border: none;
+  outline: none;
+  padding: 8px 0;
+  font-size: 0.86rem;
+  font-family: inherit;
+  width: 120px;
+}
+
+.charges-add {
+  display: grid;
+  grid-template-columns: 1fr 140px auto;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #eef0f4;
+}
+
+.charges-add input {
+  padding: 9px 12px;
+  border: 1px solid #e0e3e5;
+  border-radius: 6px;
+  font-size: 0.86rem;
+  font-family: inherit;
+}
+
+.license-modules {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px 20px;
+  margin-top: 10px;
+}
+
+.license-modules__group {
+  background: #f8f9fb;
+  border: 1px solid #eef0f4;
+  border-radius: 8px;
+  padding: 10px 12px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.license-modules__group:has(.license-modules__parent input:checked) {
+  background: var(--brand-soft);
+  border-color: rgba(109, 40, 217, 0.25);
+}
+
+.license-modules__parent {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 0.86rem;
+  cursor: pointer;
+}
+
+.license-modules__children {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 10px 0 0 28px;
+}
+
+.license-modules__child {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
+  color: #5c6470;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.license-modules__child:has(input:checked) {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.modal-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #3c4049;
+  cursor: pointer;
+}
+
+.modal-toggle input {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #3c4049;
+  margin-bottom: 6px;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d2d6e0;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-family: inherit;
+  background: #fff;
+  color: #1a1d24;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--accent, #3f7dc0);
+  box-shadow: 0 0 0 3px rgba(63, 125, 192, 0.12);
+}
+
+.modal__foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 24px;
+  border-top: 1px solid #e8ecf1;
+  flex-shrink: 0;
+}
+
+.btn-secondary {
+  padding: 10px 18px;
+  border: 1px solid #d2d6e0;
+  border-radius: 8px;
+  background: #fff;
+  color: #3c4049;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background: #f4f6f9;
+}
+
+.btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@keyframes licenses-spin {
+  to { transform: rotate(360deg); }
+}
+
+.licenses-spin {
+  display: inline-block;
+  animation: licenses-spin 0.8s linear infinite;
+}
+
+.modal-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 0.82rem;
+  animation: toast-in 0.15s ease-out;
+}
+
+@keyframes toast-in {
+  from { transform: translateY(-4px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Selector de fecha (react-date-range) */
+.date-field {
+  position: relative;
+}
+
+.date-field__trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid #d2d6e0;
+  border-radius: 8px;
+  background: #fff;
+  color: #1a1d24;
+  font-size: 0.88rem;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.date-field__trigger:hover {
+  border-color: var(--accent, #3f7dc0);
+}
+
+.date-field__trigger .msr {
+  color: #8e95a1;
+}
+
+.date-field__popover {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 20;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+  animation: toast-in 0.15s ease-out;
+}
+
+.date-field__clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-top: 1px solid #eef0f4;
+  background: #fff;
+  color: #5a6072;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.date-field__clear:hover {
+  background: #f4f6f9;
+  color: #dc2626;
+}
+
+/* Estados de licencia */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.badge--active {
+  background: #e6f7ed;
+  color: #1a7f4e;
+}
+
+.badge--blocked {
+  background: #fde8e8;
+  color: #b91c1c;
+}
+
+.badge--expired {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge--mode-cloud {
+  background: #e6f0fd;
+  color: #1d4ed8;
+}
+
+.badge--mode-local {
+  background: #f3e8fd;
+  color: #7e22ce;
+}
+
+.badge--mode-hybrid {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge--mode-offline {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.badge--dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* Tabla de licencias */
+.licenses-table .cell-key {
+  font-family: monospace;
+  font-size: 0.88rem;
+  background: #f4f6f9;
+  padding: 3px 8px;
+  border-radius: 4px;
+  color: #3f7dc0;
+}
+
+.licenses-table .cell-company {
+  font-weight: 600;
+  color: #1a1d24;
+}
+
+.licenses-table .cell-owner {
+  color: #5a6072;
+  font-size: 0.88rem;
+}
+
+/* Acciones */
+.actions-row {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border: 1px solid #e2e5eb;
+  border-radius: 6px;
+  background: #fff;
+  color: #5a6072;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-icon:hover {
+  background: #f4f6f9;
+  border-color: #c8cdd6;
+}
+
+.btn-icon--danger {
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+.btn-icon--danger:hover {
+  background: #fef2f2;
+  border-color: #fca5a5;
+}
+
+.btn-icon--success {
+  color: #16a34a;
+  border-color: #bbf7d0;
+}
+
+.btn-icon--success:hover {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+
+/* Stats cards */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.stats-row .stat-card {
+  background: #fff;
+  border: 1px solid #e2e5eb;
+  border-radius: 10px;
+  padding: 12px 14px;
+  overflow: hidden;
+}
+
+/* pages.css le pone una barra de color arriba a .stat-card (pensada para el Dashboard) —
+   aquí no se ve bien, la quitamos solo en esta página */
+.stats-row .stat-card::before {
+  display: none;
+}
+
+.stat-card__value {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #1a1d24;
+  margin-bottom: 2px;
+  line-height: 1.2;
+}
+
+.stat-card__label {
+  font-size: 0.78rem;
+  color: #8e95a1;
+}
+
+.stat-card--accent .stat-card__value {
+  color: var(--accent, #3f7dc0);
+}
+
+/* Detalle en fila expandida */
+.license-detail {
+  padding: 24px;
+  background: #f8f9fb;
+  border-top: 1px solid #e2e5eb;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
+}
+
+.license-detail-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.license-detail-section h4 {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #1a1d24;
+  margin: 0 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.license-info-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 16px;
+  font-size: 0.86rem;
+}
+
+.license-info-label {
+  color: #8e95a1;
+  font-weight: 500;
+}
+
+.license-info-value {
+  color: #1a1d24;
+  font-weight: 600;
+}
+
+.license-modules-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.license-module-tag {
+  padding: 2px 8px;
+  background: #fff;
+  border: 1px solid #d2d6e0;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: #3f7dc0;
+  font-weight: 500;
+}
+
+.sync-list {
+  display: grid;
+  gap: 8px;
+}
+
+.sync-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: #fff;
+  border: 1px solid #e2e5eb;
+  border-radius: 8px;
+}
+
+.sync-item__info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sync-item__type {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: #e8ecf1;
+  color: #3c4049;
+}
+
+/* Resumen de a quién pertenece la licencia, arriba del modal de edición */
+.license-owner {
+  margin: 0 0 4px;
+  padding: 18px 56px 14px 24px;
+  border-bottom: 1px solid var(--border, #e5e7eb);
+  background: linear-gradient(180deg, var(--brand-soft), transparent);
+}
+.license-owner__title {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 12px;
+  font-weight: 700; font-size: 15px;
+  color: var(--brand);
+}
+.license-owner__title .msr { font-size: 20px; color: var(--brand); }
+.license-owner__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px 20px;
+}
+.license-owner__grid > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.license-owner__grid small { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); }
+.license-owner__grid strong { font-size: 14px; overflow-wrap: anywhere; }
+.license-owner__grid span { font-size: 12px; color: var(--text-muted); overflow-wrap: anywhere; }
