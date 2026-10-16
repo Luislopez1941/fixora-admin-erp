@@ -9,6 +9,7 @@ const MOD_ICON: Record<string, string> = {
   dashboard:      'dashboard',
   sales:          'sell',
   cobranza:       'payments',
+  customers:      'contacts',
   shopping:       'shopping_cart',
   'cash-register':'point_of_sale',
   production:     'precision_manufacturing',
