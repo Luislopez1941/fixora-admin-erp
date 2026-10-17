@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import APIs, { type DeploymentMode } from '../services/APIs'
 import { useFetch } from '../lib/useFetch'
@@ -73,6 +74,8 @@ const fmtLimit = (n: number | null) => (n == null ? 'Ilimitado' : String(n))
 export default function ClientUserOverview() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const [syncing, setSyncing] = useState(false)
+  const [syncMsg, setSyncMsg] = useState<{ ok: boolean; text: string } | null>(null)
 
   const { data, loading, error } = useFetch<OverviewResponse>(
     () => APIs.getClientUserOverview<OverviewResponse>(id as string),
@@ -84,6 +87,21 @@ export default function ClientUserOverview() {
 
   const { clientUser: u, licenses, totalValue, usage } = data
   const fullName = `${u.firstName} ${u.firstLastName} ${u.secondLastName}`.trim()
+
+  const syncWithErp = async () => {
+    setSyncing(true)
+    setSyncMsg(null)
+    try {
+      const res: any = await APIs.syncClientUserWithErp(u.id)
+      setSyncMsg(res?.success
+        ? { ok: true, text: res.connectionChanged ? 'Sincronizado: el ERP ya usa la nueva base de datos.' : 'Sincronizado con el ERP.' }
+        : { ok: false, text: res?.message ?? 'No se pudo sincronizar.' })
+    } catch (e: any) {
+      setSyncMsg({ ok: false, text: e.message ?? 'No se pudo sincronizar.' })
+    } finally {
+      setSyncing(false)
+    }
+  }
 
   return (
     <div className="ud-page">
@@ -103,7 +121,18 @@ export default function ClientUserOverview() {
           </div>
         </div>
         <span className={`badge ${u.active ? 'badge--ok' : 'badge--off'}`}>{u.active ? 'Activo' : 'Inactivo'}</span>
+        {u.hasDedicatedDatabase && (
+          <button
+            className="ud-back"
+            onClick={syncWithErp}
+            disabled={syncing}
+            title="El ERP vuelve a leer la conexión, licencia y módulos de este cliente"
+          >
+            <span className="msr">sync</span> {syncing ? 'Sincronizando…' : 'Sincronizar'}
+          </button>
+        )}
       </div>
+      {syncMsg && <div className={`state ${syncMsg.ok ? '' : 'state--error'}`}>{syncMsg.text}</div>}
 
       {/* Resumen */}
       <div className="ud-summary">

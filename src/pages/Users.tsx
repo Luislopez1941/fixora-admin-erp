@@ -131,20 +131,21 @@ export default function Users() {
     })
   }
 
+  // Aplica TODAS las migraciones SQL pendientes en orden. Son idempotentes: si la base ya tiene parte de los cambios, se omiten sin error.
   const handleApplySql = async (userId: number) => {
     setConfirmDialog({
-      title: 'Migración SQL con datos',
-      message: 'Aplica la migración 20261014020000_catalog_restructure: mueve los datos al modelo nuevo (artículos por sucursal, categorías de empresa, saldos de inventario) y elimina las tablas viejas. Conserva los datos, pero borra categorías y movimientos huérfanos. Haz un respaldo antes. ¿Continuar?',
-      confirmLabel: 'Aplicar migración',
+      title: 'Aplicar migraciones pendientes',
+      message: 'Aplica en orden las migraciones SQL nuevas (cotizaciones, órdenes de venta, devoluciones, tipos y sucursal de clientes, proveedores, kardex y contabilidad). Solo agregan tablas y columnas, conservan los datos y se pueden repetir sin error. Haz un respaldo antes. ¿Continuar?',
+      confirmLabel: 'Aplicar migraciones',
       danger: false,
       onConfirm: async () => {
         setConfirmDialog(null)
         setLoadingAction({ userId, action: 'apply-sql' })
         try {
-          const res = await APIs.applySqlMigrationForUser(userId, '20261014020000_catalog_restructure')
-          setToast({ type: res.success ? 'success' : 'error', message: res.message || (res.success ? 'Migración aplicada.' : 'No se pudo aplicar la migración.') })
+          const res = await APIs.applyPendingMigrationsForUser(userId)
+          setToast({ type: res.success ? 'success' : 'error', message: res.message || (res.success ? 'Migraciones aplicadas.' : 'No se pudo aplicar la migración.') })
         } catch (e: any) {
-          setToast({ type: 'error', message: e.response?.data?.message || 'Error inesperado al aplicar la migración.' })
+          setToast({ type: 'error', message: e.response?.data?.message || 'Error inesperado al aplicar las migraciones.' })
         } finally {
           setLoadingAction(null)
         }
@@ -232,6 +233,35 @@ export default function Users() {
           }
         } catch (err: any) {
           setToast({ type: 'error', message: err.response?.data?.message || err.message || 'No se pudo ejecutar el seed.' })
+        } finally {
+          setLoadingAction(null)
+        }
+      },
+    })
+  }
+
+  const handleSeedGrocery = (userId: number | undefined) => {
+    if (!userId) {
+      setToast({ type: 'error', message: 'ID de usuario no válido.' })
+      return
+    }
+    setConfirmDialog({
+      title: 'Ejecutar Seed 2 (abarrotes)',
+      message: 'Esto carga un catálogo demo de abarrotes en la base del cliente: unidades, almacenes, áreas, familias y categorías, unos 4000 artículos con rangos de precio (sin almacén ni existencias asignados). No duplica lo que ya exista (se puede repetir). Úsalo en bases de prueba. ¿Continuar?',
+      confirmLabel: 'Ejecutar seed 2',
+      danger: false,
+      onConfirm: async () => {
+        setConfirmDialog(null)
+        setLoadingAction({ userId, action: 'seed2' })
+        try {
+          const response = await APIs.seedGroceryDemo(userId)
+          if (response.status === 'success' || response.success) {
+            setToast({ type: 'success', message: response.message || 'Seed 2 ejecutado correctamente.' })
+          } else {
+            setToast({ type: 'error', message: response.message || 'Error al ejecutar el seed 2.' })
+          }
+        } catch (err: any) {
+          setToast({ type: 'error', message: err.response?.data?.message || err.message || 'No se pudo ejecutar el seed 2.' })
         } finally {
           setLoadingAction(null)
         }
@@ -353,12 +383,12 @@ export default function Users() {
                     </button>
                     <button
                       className="user-action"
-                      title="SQL con datos: aplica la migración de reestructuración conservando los datos (los mueve al modelo nuevo). Haz respaldo antes."
+                      title="Aplica en orden las migraciones SQL pendientes (solo agregan tablas y columnas; se pueden repetir). Haz respaldo antes."
                       onClick={() => handleApplySql(u.id)}
                       disabled={loadingAction?.userId === u.id && loadingAction?.action === 'apply-sql'}
                     >
                       <span className={`msr ${loadingAction?.userId === u.id && loadingAction?.action === 'apply-sql' ? 'rotating' : ''}`}>database_upload</span>
-                      SQL con datos
+                      Migraciones SQL
                     </button>
                     <button
                       className="user-action user-action--danger"
@@ -386,6 +416,15 @@ export default function Users() {
                     >
                       <span className={`msr ${loadingAction?.userId === u.id && loadingAction?.action === 'seed' ? 'rotating' : ''}`}>database</span>
                       Datos
+                    </button>
+                    <button
+                      className="user-action"
+                      title="Seed 2: carga un catálogo demo de abarrotes (unos 4000 artículos con unidades, almacenes, áreas, categorías y rangos de precio; sin existencias). No duplica; se puede repetir."
+                      onClick={() => handleSeedGrocery(u.id)}
+                      disabled={loadingAction?.userId === u.id && loadingAction?.action === 'seed2'}
+                    >
+                      <span className={`msr ${loadingAction?.userId === u.id && loadingAction?.action === 'seed2' ? 'rotating' : ''}`}>shopping_basket</span>
+                      Seed 2
                     </button>
                     <button
                       className="user-action user-action--danger"

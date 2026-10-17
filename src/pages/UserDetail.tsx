@@ -5,23 +5,9 @@ import { useFetch } from '../lib/useFetch'
 import type { UserDetail, UserCompanyDetail, CompanyDetail, CompanyBilling } from '../lib/types'
 import './pages.css'
 import './UserDetail.css'
+import { moduleIcon } from '../lib/moduleMeta'
 
 /** Mapeo moduleId → nombre de icono en Material Symbols Rounded */
-const MOD_ICON: Record<string, string> = {
-  dashboard:      'dashboard',
-  sales:          'sell',
-  cobranza:       'payments',
-  shopping:       'shopping_cart',
-  'cash-register':'point_of_sale',
-  production:     'precision_manufacturing',
-  store:          'warehouse',
-  catalogos:      'category',
-  reports:        'analytics',
-  income:         'trending_up',
-  users:          'group',
-  configurations: 'settings',
-}
-
 const KIND_LABEL: Record<string, string> = {
   SYSTEM: 'Super Admin', ACCOUNT: 'Dueño de empresa', STAFF: 'Empleado',
 }
@@ -121,7 +107,7 @@ function ModulesModal({ companyId, title, onClose }: {
                     type="button"
                   >
                     <span className={`msr mod-card-icon ${isOn ? 'mod-card-icon--on' : 'mod-card-icon--off'}`}>
-                      {MOD_ICON[mod.moduleId] ?? 'extension'}
+                      {moduleIcon(mod.moduleId)}
                     </span>
                     <span className="mod-card-name">{mod.name}</span>
                     <span className={`msr mod-card-toggle ${isOn ? 'mod-card-toggle--on' : 'mod-card-toggle--off'}`}>

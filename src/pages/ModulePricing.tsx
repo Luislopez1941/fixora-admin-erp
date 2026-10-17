@@ -1,33 +1,41 @@
-import { Fragment, useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import APIs from '../services/APIs'
 import { useFetch } from '../lib/useFetch'
 import type { ModulePricingRow } from '../lib/types'
+import { TAXONOMY_MODULES } from '../lib/modules-taxonomy.generated'
+import { isLegacyModule, legacyBadge, legacyNote, moduleIcon, moduleLabel, moduleOrder, screenCount, taxonomyModule } from '../lib/moduleMeta'
 import './pages.css'
 import './ModulePricing.css'
-
-const MOD_ICON: Record<string, string> = {
-  dashboard:      'dashboard',
-  sales:          'sell',
-  cobranza:       'payments',
-  customers:      'contacts',
-  shopping:       'shopping_cart',
-  'cash-register':'point_of_sale',
-  production:     'precision_manufacturing',
-  store:          'warehouse',
-  catalogos:      'category',
-  reports:        'analytics',
-  income:         'trending_up',
-  users:          'group',
-  configurations: 'settings',
-}
 
 const CURRENCIES = ['MXN', 'USD', 'EUR']
 
 const fmt = (n: number, currency: string) =>
   new Intl.NumberFormat('es-MX', { style: 'currency', currency }).format(n)
 
+function PriceField({ label, value, onChange, compact }: { label: string; value: number; onChange: (value: string) => void; compact?: boolean }) {
+  return (
+    <label className={`mp-field ${compact ? 'mp-field--compact' : ''}`}>
+      <span>{label}</span>
+      <div className="mp-price-wrap">
+        <span className="mp-price-symbol">$</span>
+        <input
+          className="mp-price-input"
+          type="number"
+          min="0"
+          step="0.01"
+          inputMode="decimal"
+          value={value === 0 ? '' : value}
+          placeholder="0.00"
+          onChange={(e) => onChange(e.target.value)}
+          aria-label={label}
+        />
+      </div>
+    </label>
+  )
+}
+
 export default function ModulePricing() {
-  const { data: remote, loading, error } = useFetch<ModulePricingRow[]>(
+  const { data: remote, loading, error, refetch } = useFetch<ModulePricingRow[]>(
     () => APIs.getModulePricing<ModulePricingRow[]>(),
   )
 
@@ -36,6 +44,10 @@ export default function ModulePricing() {
   const [dirty, setDirty] = useState(false)
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null)
+  // Los submódulos y sus pantallas se ven abiertos por defecto; aquí solo se guardan los que se contraen
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set())
+  const toggle = (key: string) => setCollapsed((prev) => { const next = new Set(prev); next.has(key) ? next.delete(key) : next.add(key); return next })
+  const [syncing, setSyncing] = useState(false)
 
   // Agrupa por sección: un módulo con submódulos (ej. "sales" → "sales.sheet",
   // "sales.quote"…) nunca lleva precio propio — su costo es la suma de sus hijos.
@@ -43,7 +55,10 @@ export default function ModulePricing() {
   // padre y sus hijos al mismo tiempo), que era justo el bug: antes "Ventas" tenía
   // SU PROPIO precio ADEMÁS del de sus hijos.
   const sections = (() => {
-    const parents = rows.filter((r) => !r.moduleId.includes('.'))
+    // Mismo orden que el menú del ERP (taxonomía de módulos); los heredados y desconocidos al final
+    const parents = rows
+      .filter((r) => !r.moduleId.includes('.'))
+      .sort((a, b) => moduleOrder(a.moduleId) - moduleOrder(b.moduleId))
     return parents.map((parent) => ({
       parent,
       parentIndex: rows.indexOf(parent),
@@ -100,6 +115,25 @@ export default function ModulePricing() {
     }
   }
 
+  // Submódulos de la taxonomía que todavía no tienen fila en el catálogo (el seed o el botón los crea)
+  const expectedKeys = TAXONOMY_MODULES.flatMap((m) => [m.key, ...m.groups.filter((g) => g.key).map((g) => `${m.key}.${g.key}`)])
+  const present = new Set(rows.map((r) => r.moduleId))
+  const missingCount = rows.length ? expectedKeys.filter((k) => !present.has(k)).length : 0
+
+  const syncCatalog = async () => {
+    setSyncing(true)
+    setMsg(null)
+    try {
+      const res: any = await APIs.syncModulesCatalog()
+      setMsg({ ok: true, text: `Catálogo sincronizado: ${res?.created ?? 0} filas nuevas, ${res?.renamed ?? 0} nombres actualizados. Los precios no se tocaron.` })
+      refetch()
+    } catch (e: any) {
+      setMsg({ ok: false, text: e.message ?? 'No se pudo sincronizar el catálogo.' })
+    } finally {
+      setSyncing(false)
+    }
+  }
+
   const totalMonthly = rows.reduce((s, r) => s + r.priceMonthly, 0)
   const totalAnnual  = rows.reduce((s, r) => s + r.priceAnnual,  0)
   const maxMonthly   = Math.max(...rows.map(r => r.priceMonthly), 0)
@@ -131,7 +165,7 @@ export default function ModulePricing() {
         <div className="mp-summary-card">
           <div className="mp-summary-label">Total si empresa activa todo (mensual)</div>
           <div className="mp-summary-value">{fmt(totalMonthly, currency)}</div>
-          <div className="mp-summary-sub">{rows.length} módulos</div>
+          <div className="mp-summary-sub">{sections.length} módulos · {sections.reduce((n, { parent }) => n + screenCount(parent.moduleId), 0)} pantallas</div>
         </div>
         <div className="mp-summary-card">
           <div className="mp-summary-label">Total si empresa activa todo (anual)</div>
@@ -147,138 +181,140 @@ export default function ModulePricing() {
         </div>
       </div>
 
-      {/* Tabla */}
-      <div className="panel">
-        {loading ? (
-          <div className="state">Cargando módulos…</div>
-        ) : error ? (
-          <div className="state state--error">{error}</div>
-        ) : (
-          <table className="mp-table">
-            <thead>
-              <tr>
-                <th>Módulo</th>
-                <th className="right">Precio mensual</th>
-                <th className="right">Precio anual</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sections.map(({ parent, children }) => {
-                const hasChildren = children.length > 0
-                const sectionMonthly = hasChildren
-                  ? children.reduce((s, { row }) => s + row.priceMonthly, 0)
-                  : parent.priceMonthly
-                const sectionAnnual = hasChildren
-                  ? children.reduce((s, { row }) => s + row.priceAnnual, 0)
-                  : parent.priceAnnual
+      {missingCount > 0 && (
+        <div className="mp-sync">
+          <span className="msr">sync_problem</span>
+          <div>
+            <strong>Faltan {missingCount} filas en el catálogo</strong>
+            <p>Los submódulos de la nueva estructura (Punto de venta, Gestión comercial…) todavía no existen en la base, por eso no se les puede poner precio. Sincroniza el catálogo: crea lo que falta y no toca ningún precio.</p>
+          </div>
+          <button type="button" className="mp-btn-save" onClick={syncCatalog} disabled={syncing}>
+            {syncing ? 'Sincronizando…' : 'Sincronizar catálogo'}
+          </button>
+        </div>
+      )}
 
-                return (
-                  <Fragment key={parent.moduleId}>
-                    <tr className={hasChildren ? 'mp-row--section' : undefined}>
-                      <td>
-                        <div className="mp-mod-cell">
-                          <span className="msr mp-mod-icon">
-                            {MOD_ICON[parent.moduleId] ?? 'extension'}
-                          </span>
-                          <div>
-                            <div className="mp-mod-name">{parent.name}</div>
-                            {parent.description && (
-                              <div className="mp-mod-desc">{parent.description}</div>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-                      {hasChildren ? (
-                        <>
-                          <td className="mp-price-cell">
-                            <span className="mp-price-computed">{fmt(sectionMonthly, currency)}</span>
-                          </td>
-                          <td className="mp-price-cell">
-                            <span className="mp-price-computed">{fmt(sectionAnnual, currency)}</span>
-                          </td>
-                        </>
-                      ) : (
-                        <>
-                          <td className="mp-price-cell">
-                            <div className="mp-price-wrap">
-                              <span className="mp-price-symbol">$</span>
-                              <input
-                                className="mp-price-input"
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                value={parent.priceMonthly === 0 ? '' : parent.priceMonthly}
-                                placeholder="0.00"
-                                onChange={e => setPrice(rows.indexOf(parent), 'priceMonthly', e.target.value)}
-                              />
-                            </div>
-                          </td>
-                          <td className="mp-price-cell">
-                            <div className="mp-price-wrap">
-                              <span className="mp-price-symbol">$</span>
-                              <input
-                                className="mp-price-input"
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                value={parent.priceAnnual === 0 ? '' : parent.priceAnnual}
-                                placeholder="0.00"
-                                onChange={e => setPrice(rows.indexOf(parent), 'priceAnnual', e.target.value)}
-                              />
-                            </div>
-                          </td>
-                        </>
-                      )}
-                    </tr>
-                    {children.map(({ row, idx }) => (
-                      <tr key={row.moduleId} className="mp-row--child">
-                        <td>
-                          <div className="mp-mod-cell mp-mod-cell--child">
-                            <div>
-                              <div className="mp-mod-name">{row.name}</div>
-                              {row.description && (
-                                <div className="mp-mod-desc">{row.description}</div>
-                              )}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="mp-price-cell">
-                          <div className="mp-price-wrap">
-                            <span className="mp-price-symbol">$</span>
-                            <input
-                              className="mp-price-input"
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              value={row.priceMonthly === 0 ? '' : row.priceMonthly}
-                              placeholder="0.00"
-                              onChange={e => setPrice(idx, 'priceMonthly', e.target.value)}
-                            />
-                          </div>
-                        </td>
-                        <td className="mp-price-cell">
-                          <div className="mp-price-wrap">
-                            <span className="mp-price-symbol">$</span>
-                            <input
-                              className="mp-price-input"
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              value={row.priceAnnual === 0 ? '' : row.priceAnnual}
-                              placeholder="0.00"
-                              onChange={e => setPrice(idx, 'priceAnnual', e.target.value)}
-                            />
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </Fragment>
-                )
-              })}
-            </tbody>
-          </table>
-        )}
+      <div className="mp-toolbar">
+        <span className="mp-hint">
+          <b>Cómo se cobra:</b> el precio de un módulo es la suma de sus <b>tarifas por sección</b> (las de siempre) y el precio de sus <b>submódulos</b>.
+          Las <b>pantallas</b> no se cobran: pertenecen a un submódulo. Verde: ya existe en el ERP · punteado: en construcción.
+        </span>
+        <button type="button" className="mp-link-btn" onClick={() => setCollapsed(new Set())}>Expandir todo</button>
+        <button type="button" className="mp-link-btn" onClick={() => setCollapsed(new Set(sections.map(({ parent }) => parent.moduleId)))}>Contraer todo</button>
       </div>
+
+      {/* Módulos en tarjetas: precios, secciones con licencia propia y pantallas agrupadas */}
+      {loading ? (
+        <div className="panel"><div className="state">Cargando módulos…</div></div>
+      ) : error ? (
+        <div className="panel"><div className="state state--error">{error}</div></div>
+      ) : (
+        <div className="mp-grid">
+          {sections.map(({ parent, parentIndex, children }) => {
+            const hasChildren = children.length > 0
+            const sectionMonthly = hasChildren ? children.reduce((sum, { row }) => sum + row.priceMonthly, 0) : parent.priceMonthly
+            const sectionAnnual = hasChildren ? children.reduce((sum, { row }) => sum + row.priceAnnual, 0) : parent.priceAnnual
+            const tax = taxonomyModule(parent.moduleId)
+            const legacy = isLegacyModule(parent.moduleId)
+            const isOpen = !collapsed.has(parent.moduleId)
+            const groups = tax?.groups ?? []
+            // Submódulos = grupos de pantallas (fila propia en el catálogo); el resto de los hijos son secciones con tarifa heredada
+            const groupKeys = new Set(groups.filter((g) => g.key).map((g) => `${parent.moduleId}.${g.key}`))
+            const groupRows = new Map(children.filter(({ row }) => groupKeys.has(row.moduleId)).map(({ row, idx }) => [row.moduleId, { row, idx }]))
+            const sectionChildren = children.filter(({ row }) => !groupKeys.has(row.moduleId))
+            const groupCount = groups.filter((g) => g.label).length || (groups.length ? 1 : 0)
+            const screens = screenCount(parent.moduleId)
+            const description = legacyNote(parent.moduleId) ?? tax?.description ?? parent.description
+
+            return (
+              <article key={parent.moduleId} className={`mp-card ${legacy ? 'mp-card--legacy' : ''} ${isOpen ? 'mp-card--open' : ''}`}>
+                <header className="mp-card-head">
+                  <span className="msr mp-mod-icon">{moduleIcon(parent.moduleId)}</span>
+                  <div className="mp-card-title">
+                    <h3>
+                      {moduleLabel(parent.moduleId, parent.name)}
+                      {legacy && <span className="mp-badge mp-badge--legacy">{legacyBadge(parent.moduleId)}</span>}
+                      {!tax && !legacy && <span className="mp-badge">Sin taxonomía</span>}
+                    </h3>
+                    {description && <p>{description}</p>}
+                  </div>
+                </header>
+
+                <div className="mp-card-prices">
+                  {hasChildren ? (
+                    <>
+                      <div className="mp-total"><span>Mensual</span><strong>{fmt(sectionMonthly, currency)}</strong></div>
+                      <div className="mp-total"><span>Anual</span><strong>{fmt(sectionAnnual, currency)}</strong></div>
+                    </>
+                  ) : (
+                    <>
+                      <PriceField label="Mensual" value={parent.priceMonthly} onChange={(v) => setPrice(parentIndex, 'priceMonthly', v)} />
+                      <PriceField label="Anual" value={parent.priceAnnual} onChange={(v) => setPrice(parentIndex, 'priceAnnual', v)} />
+                    </>
+                  )}
+                </div>
+
+                {sectionChildren.length > 0 && <p className="mp-caption">Tarifas por sección (anteriores)</p>}
+                {sectionChildren.length > 0 && (
+                  <ul className="mp-subs" aria-label={`Licencias por sección de ${parent.name}`}>
+                    {sectionChildren.map(({ row, idx }) => (
+                      <li key={row.moduleId} className="mp-sub">
+                        <span className="mp-sub-name" title={row.description || row.name}>{row.name}</span>
+                        <PriceField compact label="Mensual" value={row.priceMonthly} onChange={(v) => setPrice(idx, 'priceMonthly', v)} />
+                        <PriceField compact label="Anual" value={row.priceAnnual} onChange={(v) => setPrice(idx, 'priceAnnual', v)} />
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {!isOpen && groups.some((g) => g.label) && (
+                  <div className="mp-group-tags" aria-label="Grupos de pantallas">
+                    {groups.filter((g) => g.label).map((g) => (
+                      <span key={g.label} className="mp-tag">{g.label}<b>{g.screens.length}</b></span>
+                    ))}
+                  </div>
+                )}
+
+                {screens > 0 && (
+                  <button type="button" className="mp-screens-toggle" onClick={() => toggle(parent.moduleId)} aria-expanded={isOpen}>
+                    <span className="msr" style={{ fontSize: 18 }}>{isOpen ? 'expand_less' : 'expand_more'}</span>
+                    {isOpen ? 'Ocultar' : 'Ver'} {groupCount} {groupCount === 1 ? 'submódulo' : 'submódulos'} · {screens} pantallas
+                  </button>
+                )}
+
+                {isOpen && (
+                  <>
+                  <p className="mp-caption">Submódulos y pantallas{groupRows.size > 0 ? ' · precio por submódulo (0 = incluido en el módulo)' : ''}</p>
+                  <div className="mp-groups">
+                    {groups.map((g, gi) => (
+                      <section className="mp-group" key={gi}>
+                        <h4>{g.label ?? 'Pantallas'}<span>{g.screens.length}</span></h4>
+                        {g.key && groupRows.get(`${parent.moduleId}.${g.key}`) && (() => {
+                          const { row, idx } = groupRows.get(`${parent.moduleId}.${g.key}`)!
+                          return (
+                            <div className="mp-group-prices" title="Precio del submódulo (0 = incluido)">
+                              <PriceField label="Mensual" value={row.priceMonthly} onChange={(v) => setPrice(idx, 'priceMonthly', v)} />
+                              <PriceField label="Anual" value={row.priceAnnual} onChange={(v) => setPrice(idx, 'priceAnnual', v)} />
+                            </div>
+                          )
+                        })()}
+                        <div className="mp-screens-chips">
+                          {g.screens.map((sc) => (
+                            <span key={sc.label} className={`mp-chip ${sc.live ? 'mp-chip--live' : ''}`} title={sc.live ? 'Ya está disponible en el ERP' : 'En construcción'}>
+                              {sc.label}
+                            </span>
+                          ))}
+                        </div>
+                      </section>
+                    ))}
+                  </div>
+                  </>
+                )}
+              </article>
+            )
+          })}
+        </div>
+      )}
 
       {/* Barra de guardado */}
       {!loading && (

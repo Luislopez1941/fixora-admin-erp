@@ -4,22 +4,7 @@ import APIs from '../services/APIs'
 import type { CompanyModulesResponse, CompanyModule, UpdateCompanyModulesPayload } from '../lib/types'
 import './pages.css'
 import './CompanyModules.css'
-
-const MODULE_ICONS: Record<string, string> = {
-  'dashboard':      'dashboard',
-  'sales':          'sell',
-  'cobranza':       'payments',
-  'customers':      'contacts',
-  'shopping':       'shopping_cart',
-  'cash-register':  'point_of_sale',
-  'production':     'precision_manufacturing',
-  'store':          'warehouse',
-  'catalogos':      'inventory_2',
-  'reports':        'assessment',
-  'income':         'monetization_on',
-  'users':          'group',
-  'configurations': 'settings',
-}
+import { moduleIcon } from '../lib/moduleMeta'
 
 export default function CompanyModules() {
   const { id } = useParams<{ id: string }>()
@@ -169,7 +154,7 @@ export default function CompanyModules() {
           >
             <div className="cm-card-top">
               <span className="msr cm-card-icon">
-                {MODULE_ICONS[mod.moduleId] ?? 'extension'}
+                {moduleIcon(mod.moduleId)}
               </span>
               <label className="switch" onClick={(e) => e.stopPropagation()}>
                 <input

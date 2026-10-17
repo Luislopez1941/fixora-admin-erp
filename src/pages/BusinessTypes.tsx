@@ -3,21 +3,7 @@ import APIs from '../services/APIs'
 import { useFetch } from '../lib/useFetch'
 import './pages.css'
 import './BusinessTypes.css'
-
-const MOD_ICON: Record<string, string> = {
-  dashboard:      'dashboard',
-  sales:          'sell',
-  cobranza:       'payments',
-  shopping:       'shopping_cart',
-  'cash-register':'point_of_sale',
-  production:     'precision_manufacturing',
-  store:          'warehouse',
-  catalogos:      'category',
-  reports:        'analytics',
-  income:         'trending_up',
-  users:          'group',
-  configurations: 'settings',
-}
+import { moduleIcon } from '../lib/moduleMeta'
 
 const MOD_LABEL: Record<string, string> = {
   dashboard:      'Dashboard',
@@ -279,7 +265,7 @@ export default function BusinessTypes() {
                       (bt.defaultModules ?? []).map((m) => (
                         <span key={m.id} className="business-types__module-chip">
                           <span className="msr" style={{ fontSize: 14 }}>
-                            {MOD_ICON[m.moduleId] || 'widgets'}
+                            {moduleIcon(m.moduleId, 'widgets')}
                           </span>
                           {MOD_LABEL[m.moduleId] || m.moduleId}
                         </span>
@@ -383,7 +369,7 @@ export default function BusinessTypes() {
                       disabled={saving}
                     />
                     <span className="msr" style={{ fontSize: 18 }}>
-                      {MOD_ICON[modId] || 'widgets'}
+                      {moduleIcon(modId, 'widgets')}
                     </span>
                     <span>{MOD_LABEL[modId] || modId}</span>
                   </label>

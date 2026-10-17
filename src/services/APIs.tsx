@@ -71,6 +71,7 @@ const APIs = {
     const res = await ConfigurationAPIs.get<{ success: boolean; modules: T }>('licenses/modules-catalog');
     return res.modules;
   },
+  syncModulesCatalog: <T = any>() => ConfigurationAPIs.post<T>('licenses/modules-catalog/sync', {}),
   updateModulePricing: <T = any>(payload: {
     modules: Array<{ moduleId: string; priceMonthly: number; priceAnnual: number; currency: string }>;
   }) => ConfigurationAPIs.put<T>('licenses/modules-catalog', payload),
@@ -135,6 +136,7 @@ const APIs = {
   runMigrationForUser: async (userId: number) => ConfigurationAPIs.post<{ success: boolean; message: string }>(`migration/run/${userId}`, {}),
   deployMigrationForUser: async (userId: number) => ConfigurationAPIs.post<{ success: boolean; message: string; error?: string }>(`migration/deploy/${userId}`, {}),
   pushForceForUser: async (userId: number) => ConfigurationAPIs.post<{ success: boolean; message: string; error?: string }>(`migration/push-force/${userId}`, {}),
+  applyPendingMigrationsForUser: async (userId: number) => ConfigurationAPIs.post<{ success: boolean; message: string; applied?: string[]; failed?: string; error?: string }>(`migration/apply-pending/${userId}`, {}),
   applySqlMigrationForUser: async (userId: number, name: string) => ConfigurationAPIs.post<{ success: boolean; message: string; error?: string }>(`migration/apply-sql/${userId}`, { name }),
   resetDatabase: async (userId: number) => ConfigurationAPIs.post<{ success: boolean; message: string }>(`migration/reset/${userId}`, {}),
 
@@ -175,10 +177,14 @@ const APIs = {
     supabaseServiceRoleKey?: string;
     jwtSecret?: string;
   }) => ConfigurationAPIs.patch<T>(`client-users/${id}`, data),
+  // El ERP olvida lo que tenía cacheado de este cliente (conexión, licencia, módulos) y lo vuelve a leer
+  syncClientUserWithErp: <T = any>(id: number | string) => ConfigurationAPIs.post<T>(`client-users/${id}/sync-erp`, {}),
   retryProvisioning: <T = any>(id: number, password: string) =>
     ConfigurationAPIs.post<T>(`client-users/${id}/retry-provisioning`, { password }),
   seedTenantByUserId: <T = any>(userId: number) =>
     ConfigurationAPIs.post<T>(`seed/user/${userId}`, {}),
+  seedGroceryDemo: <T = any>(userId: number) =>
+    ConfigurationAPIs.post<T>(`seed/grocery/${userId}`, {}),
   syncUser: <T = any>(userId: number, userData: any) =>
     ConfigurationAPIs.post<T>(`seed/sync-user/${userId}`, userData),
 };
